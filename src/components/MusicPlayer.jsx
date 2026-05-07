@@ -29,7 +29,6 @@ function MusicPlayer({ triggerPlay = false }) {
         // Harusnya tidak terjadi karena ini dari interaksi user langsung
         showToast('Gagal memutar musik');
       });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [triggerPlay]);
 
   /* ── Progress bar ── */
