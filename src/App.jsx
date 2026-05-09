@@ -1,7 +1,7 @@
-import './gallery.css'; // tambah di App.jsx bagian paling atas import
-import React, { useState, useEffect } from 'react';
-import { WEDDING, BANKS, LOVE_STORY } from './config';
-
+import './gallery.css';
+import React, { useState, useEffect, useRef } from 'react';
+import { WEDDING, BANKS, LOVE_STORY, MEMPELAI } from './config';
+import BrideGroomSection from './components/BrideGroomSection';
 
 import CountDown   from './components/CountDown';
 import MusicPlayer from './components/MusicPlayer';
@@ -11,84 +11,49 @@ import Gallery     from './components/Gallery';
 
 import {
   BotanicalDivider,
+  BugisDividerLine,
   PulseRings,
   CornerAccent,
+  SulapaEppa,
+  FloatingParticles,
 } from './components/Decorations';
 
-/* ────────────────────────────────────────────
-   Komponen dekoratif lokal (tidak ada di file
-   Decorations.jsx sehingga didefinisikan di sini)
-──────────────────────────────────────────── */
-function FloralDivider() {
-  return (
-    <div style={{
-      display:        'flex',
-      alignItems:     'center',
-      justifyContent: 'center',
-      gap:            '12px',
-      margin:         '16px 0',
-      opacity:        0.45,
-    }}>
-      <div style={{ height: '1px', width: '48px', background: 'var(--primary)' }} />
-      <span style={{ color: 'var(--primary)', fontSize: '18px', letterSpacing: '6px' }}>✿ ✦ ✿</span>
-      <div style={{ height: '1px', width: '48px', background: 'var(--primary)' }} />
-    </div>
-  );
+/* ════════════════════════════════════════════════
+   KOMPONEN LOKAL
+════════════════════════════════════════════════ */
+
+/* ── Divider utama (gold + Sulapa Eppa) ── */
+function GoldDivider() {
+  return <BotanicalDivider />;
 }
 
-function FlowerCorner({ style }) {
+/* ── Divider section ── */
+function SectionDivider() {
+  return <BugisDividerLine />;
+}
+
+/* ── Ornamen sudut dengan motif Bugis ── */
+function BugisCorner({ style }) {
   return (
     <svg
-      viewBox="0 0 120 120"
+      viewBox="0 0 100 100"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      style={{ position: 'absolute', pointerEvents: 'none', opacity: 0.08, ...style }}
+      style={{ position: 'absolute', pointerEvents: 'none', ...style }}
       aria-hidden="true"
     >
-      <circle cx="60" cy="60" r="30" stroke="#44213d" strokeWidth="0.6" />
-      <path d="M60 10 Q80 40 60 60 Q40 40 60 10Z" stroke="#44213d" strokeWidth="0.5" />
-      <path d="M110 60 Q80 80 60 60 Q80 40 110 60Z" stroke="#44213d" strokeWidth="0.5" />
-      <path d="M60 110 Q40 80 60 60 Q80 80 60 110Z" stroke="#44213d" strokeWidth="0.5" />
-      <path d="M10 60 Q40 40 60 60 Q40 80 10 60Z" stroke="#44213d" strokeWidth="0.5" />
+      <path d="M6 6 L6 42" stroke="rgba(201,168,76,0.3)" strokeWidth="1" />
+      <path d="M6 6 L42 6" stroke="rgba(201,168,76,0.3)" strokeWidth="1" />
+      <path d="M14 14 L14 36" stroke="rgba(201,168,76,0.15)" strokeWidth="0.6" />
+      <path d="M14 14 L36 14" stroke="rgba(201,168,76,0.15)" strokeWidth="0.6" />
+      {/* Sulapa Eppa kecil */}
+      <polygon points="6,6 12,6 6,12" fill="rgba(201,168,76,0.25)" />
+      <circle cx="6" cy="6" r="2" fill="rgba(201,168,76,0.5)" />
     </svg>
   );
 }
 
-/* ────────────────────────────────────────────
-   Kelopak jatuh
-──────────────────────────────────────────── */
-function FallingPetals() {
-  const petals = Array.from({ length: 10 }, (_, i) => i);
-  return (
-    <div style={{
-      position:      'fixed',
-      inset:         0,
-      pointerEvents: 'none',
-      zIndex:        0,
-      overflow:      'hidden',
-    }}>
-      {petals.map((i) => (
-        <div
-          key={i}
-          style={{
-            position:        'absolute',
-            top:             '-10%',
-            left:            `${(i * 10) + Math.random() * 5}%`,
-            fontSize:        `${14 + (i % 4) * 4}px`,
-            animation:       `petalFall ${6 + (i % 5)}s linear ${i * 0.8}s infinite`,
-            opacity:         0.4,
-          }}
-        >
-          {['🌸', '🌺', '✿', '❀'][i % 4]}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/* ────────────────────────────────────────────
-   Nav Items
-──────────────────────────────────────────── */
+/* ── NAV ITEMS ── */
 const NAV_ITEMS = [
   { id: 'cover',   label: 'Beranda', icon: '🏠' },
   { id: 'info',    label: 'Acara',   icon: '📅' },
@@ -99,37 +64,37 @@ const NAV_ITEMS = [
   { id: 'pesan',   label: 'Ucapan',  icon: '🌸' },
 ];
 
-/* ────────────────────────────────────────────
-   Main App
-──────────────────────────────────────────── */
+/* ════════════════════════════════════════════════
+   MAIN APP
+════════════════════════════════════════════════ */
 function App() {
   const [activeSection, setActiveSection] = useState('cover');
   const [storyIndex,    setStoryIndex]    = useState(0);
   const [copiedBank,    setCopiedBank]    = useState('');
   const [toast,         setToast]         = useState('');
   const [menuOpen,      setMenuOpen]      = useState(false);
+  const [isOpen,        setIsOpen]        = useState(false);
+  const [playMusic,     setPlayMusic]     = useState(false);
+  const [autoScrolling, setAutoScrolling] = useState(false);
 
-  // ── State untuk cover lock & music trigger ──
-  const [isOpen,       setIsOpen]       = useState(false); // false = undangan belum dibuka
-  const [playMusic,    setPlayMusic]    = useState(false); // trigger ke MusicPlayer
+  const autoScrollRef = useRef(null);
 
-  /* ── Kunci / buka scroll body saat cover ── */
+  /* ── Kunci scroll saat cover masih tampil ── */
   useEffect(() => {
     if (!isOpen) {
-      // Kunci scroll: sembunyikan overflow body DAN html
-      document.body.style.overflow    = 'hidden';
+      document.body.style.overflow = 'hidden';
       document.documentElement.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow    = '';
+      document.body.style.overflow = '';
       document.documentElement.style.overflow = '';
     }
     return () => {
-      document.body.style.overflow    = '';
+      document.body.style.overflow = '';
       document.documentElement.style.overflow = '';
     };
   }, [isOpen]);
 
-  /* ── Active section via IntersectionObserver ── */
+  /* ── IntersectionObserver untuk active nav ── */
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => entries.forEach((e) => { if (e.isIntersecting) setActiveSection(e.target.id); }),
@@ -139,264 +104,357 @@ function App() {
     return () => observer.disconnect();
   }, []);
 
-  const scrollTo  = (id)  => {
+  /* ── Stop auto scroll saat user scroll manual ── */
+  useEffect(() => {
+    if (!autoScrolling) return;
+
+    const stopScroll = () => {
+      cancelAnimationFrame(autoScrollRef.current);
+      setAutoScrolling(false);
+    };
+
+    window.addEventListener('wheel',     stopScroll, { passive: true });
+    window.addEventListener('touchmove', stopScroll, { passive: true });
+    window.addEventListener('keydown',   stopScroll);
+
+    return () => {
+      window.removeEventListener('wheel',     stopScroll);
+      window.removeEventListener('touchmove', stopScroll);
+      window.removeEventListener('keydown',   stopScroll);
+    };
+  }, [autoScrolling]);
+
+  /* ── Fungsi auto scroll ── */
+  const startAutoScroll = () => {
+    if (autoScrollRef.current) cancelAnimationFrame(autoScrollRef.current);
+
+    setAutoScrolling(true);
+
+    const speed = 0.55; // px per frame — ubah nilai ini untuk atur kecepatan
+
+    const step = () => {
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      if (window.scrollY >= maxScroll) {
+        setAutoScrolling(false);
+        return;
+      }
+      window.scrollBy(0, speed);
+      autoScrollRef.current = requestAnimationFrame(step);
+    };
+
+    autoScrollRef.current = requestAnimationFrame(step);
+  };
+
+  const scrollTo  = (id) => {
+    // Jika sedang auto scroll, hentikan dulu
+    if (autoScrollRef.current) {
+      cancelAnimationFrame(autoScrollRef.current);
+      setAutoScrolling(false);
+    }
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
     setMenuOpen(false);
   };
+
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 2500); };
 
-  /* ── Handler tombol "Buka Undangan" ── */
   const handleBukaUndangan = () => {
-    setIsOpen(true);      // buka scroll
-    setPlayMusic(true);   // trigger musik
-    scrollTo('info');     // scroll ke section info
+    setIsOpen(true);
+    setPlayMusic(true);
+
+    // Scroll ke section info dulu, lalu mulai auto scroll
+    const target = document.getElementById('info');
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+      // Tunggu smooth scroll selesai (~900ms) baru mulai auto scroll
+      setTimeout(() => {
+        startAutoScroll();
+      }, 950);
+    }
+  };
+
+  const handleStopAutoScroll = () => {
+    cancelAnimationFrame(autoScrollRef.current);
+    setAutoScrolling(false);
   };
 
   const copyNorek = (norek) => {
     navigator.clipboard.writeText(norek)
-      .then(() => {
-        setCopiedBank(norek);
-        showToast(`Nomor ${norek} berhasil disalin ✓`);
-        setTimeout(() => setCopiedBank(''), 2500);
-      })
+      .then(() => { setCopiedBank(norek); showToast(`Nomor ${norek} disalin ✓`); setTimeout(() => setCopiedBank(''), 2500); })
       .catch(() => showToast('Silakan salin manual 🙏'));
   };
 
   const prevStory = () => setStoryIndex((i) => (i - 1 + LOVE_STORY.length) % LOVE_STORY.length);
   const nextStory = () => setStoryIndex((i) => (i + 1) % LOVE_STORY.length);
 
+  /* ── warna teks & label umum ── */
+  const T  = { color: 'var(--text-primary)' };
+  const T2 = { color: 'var(--text-secondary)' };
+  const TG = { color: 'var(--gold)' };
+
   return (
     <>
-      <FallingPetals />
+      <FloatingParticles />
 
-      {/* ══════════════ NAVIGASI TOP (Desktop) ══════════════════ */}
+      {/* ══════════════ NAV ══════════════════════════════════════ */}
       <nav className="topbar">
         <span className="brand">
-          {WEDDING.mempelai1.split(' ').slice(0, 2).join(' ')} &amp; {WEDDING.mempelai2.split(' ').slice(0, 2).join(' ')}
+          {WEDDING.mempelai1.split(' ')[0]} &amp; {WEDDING.mempelai2.split(' ')[0]}
         </span>
         <div className="nav-links">
           {NAV_ITEMS.map((n) => (
-            <a
-              key={n.id}
-              className={activeSection === n.id ? 'active' : ''}
-              onClick={() => scrollTo(n.id)}
-            >
+            <a key={n.id} className={activeSection === n.id ? 'active' : ''} onClick={() => scrollTo(n.id)}>
               {n.label}
             </a>
           ))}
         </div>
-        {/* Hamburger mobile */}
-        <button
-          className="menu-toggle"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Menu"
-        >
+        <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
           {menuOpen ? '✕' : '☰'}
         </button>
       </nav>
 
-      {/* ── Drawer mobile ── */}
       {menuOpen && (
         <div className="mobile-drawer">
           {NAV_ITEMS.map((n) => (
-            <a
-              key={n.id}
-              className={activeSection === n.id ? 'active' : ''}
-              onClick={() => scrollTo(n.id)}
-            >
+            <a key={n.id} className={activeSection === n.id ? 'active' : ''} onClick={() => scrollTo(n.id)}>
               <span>{n.icon}</span> {n.label}
             </a>
           ))}
         </div>
       )}
 
-      {/* ════════════════ COVER ═══════════════════════════════════ */}
+      {/* ══════════════ COVER ════════════════════════════════════ */}
       <section id="cover">
-        <PulseRings />
-        <CornerAccent style={{ top: 60,  left:  20, width: 100, height: 100 }} />
-        <CornerAccent style={{ top: 60,  right: 20, width: 100, height: 100 }} />
-        <CornerAccent style={{ bottom: 60, left: 20, width:  80, height:  80 }} />
-        <CornerAccent style={{ bottom: 60, right: 20, width: 80, height:  80 }} />
+        {/* Background motif Sulapa Eppa besar */}
+        <SulapaEppa style={{ width: 600, height: 600, top: '50%', left: '50%', transform: 'translate(-50%,-50%)', opacity: 1 }} />
 
-        <div className="fade-up" style={{ textAlign: 'center', zIndex: 1, position: 'relative', padding: '0 16px' }}>
-          <p style={{ fontFamily: 'serif', fontSize: 'clamp(20px, 5vw, 28px)', letterSpacing: '6px', color: 'var(--secondary)', marginBottom: '24px', opacity: 0.7 }}>
+        {/* Glow effect */}
+        <div style={{
+          position: 'absolute', width: '500px', height: '500px',
+          borderRadius: '50%', top: '50%', left: '50%',
+          transform: 'translate(-50%,-50%)',
+          background: 'radial-gradient(circle, rgba(120,80,200,0.12) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }} />
+
+        <PulseRings />
+
+        {/* Sudut ornamen */}
+        <BugisCorner style={{ top: 80,  left:  20, width: 80, height: 80 }} />
+        <BugisCorner style={{ top: 80,  right: 20, width: 80, height: 80, transform: 'scaleX(-1)' }} />
+        <BugisCorner style={{ bottom: 80, left: 20, width: 70, height: 70, transform: 'scaleY(-1)' }} />
+        <BugisCorner style={{ bottom: 80, right: 20, width: 70, height: 70, transform: 'scale(-1,-1)' }} />
+
+        {/* Konten cover */}
+        <div className="fade-up" style={{ textAlign: 'center', zIndex: 1, position: 'relative', padding: '0 20px' }}>
+          {/* Basmallah */}
+          <p style={{
+            fontFamily: 'serif', fontSize: 'clamp(22px, 5vw, 30px)',
+            letterSpacing: '4px', color: 'rgba(201,168,76,0.6)',
+            marginBottom: '28px',
+          }}>
             ﷽
           </p>
 
-          <p className="subtitle">Undangan Pernikahan</p>
+          {/* Label */}
+          <p style={{
+            fontFamily: 'Poppins, sans-serif', fontSize: '9px',
+            letterSpacing: '0.5em', textTransform: 'uppercase',
+            fontWeight: 600, color: 'rgba(201,168,76,0.7)',
+            marginBottom: '20px',
+          }}>
+            Undangan Pernikahan
+          </p>
 
-          <h1 style={{ fontFamily: "'Cormorant Garamond', var(--font-display), serif", fontSize: 'clamp(36px, 10vw, 72px)', fontWeight: 400, color: 'var(--primary)', lineHeight: 1.1 }}>
+          {/* Nama Pengantin */}
+          <h1 style={{
+            fontFamily: "'Cinzel', serif",
+            fontSize: 'clamp(32px, 9vw, 68px)',
+            fontWeight: 400, letterSpacing: '0.08em',
+            color: 'var(--champagne)',
+            lineHeight: 1.1,
+            textShadow: '0 0 40px rgba(201,168,76,0.2)',
+          }}>
             {WEDDING.mempelai1.split(' ').slice(0, 2).join(' ')}
           </h1>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', margin: '8px 0' }}>
-            <div style={{ height: '1px', width: '48px', background: 'linear-gradient(to right, transparent, var(--primary))', opacity: 0.4 }} />
-            <p style={{ fontFamily: 'serif', fontSize: 'clamp(22px, 5vw, 32px)', color: 'var(--secondary)', fontStyle: 'italic' }}>&amp;</p>
-            <div style={{ height: '1px', width: '48px', background: 'linear-gradient(to left, transparent, var(--primary))', opacity: 0.4 }} />
+          {/* & dengan garis emas */}
+          <div style={{
+            display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: '16px', margin: '10px 0',
+          }}>
+            <div style={{ height: '1px', width: '60px', background: 'linear-gradient(to right, transparent, rgba(201,168,76,0.5))' }} />
+            <p style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: 'clamp(24px, 5vw, 36px)',
+              color: 'var(--gold)', fontStyle: 'italic',
+            }}>&amp;</p>
+            <div style={{ height: '1px', width: '60px', background: 'linear-gradient(to left, transparent, rgba(201,168,76,0.5))' }} />
           </div>
 
-          <h1 style={{ fontFamily: "'Cormorant Garamond', var(--font-display), serif", fontSize: 'clamp(36px, 10vw, 72px)', fontWeight: 400, color: 'var(--primary)', lineHeight: 1.1 }}>
+          <h1 style={{
+            fontFamily: "'Cinzel', serif",
+            fontSize: 'clamp(32px, 9vw, 68px)',
+            fontWeight: 400, letterSpacing: '0.08em',
+            color: 'var(--champagne)',
+            lineHeight: 1.1,
+            textShadow: '0 0 40px rgba(201,168,76,0.2)',
+          }}>
             {WEDDING.mempelai2.split(' ').slice(0, 2).join(' ')}
           </h1>
 
-          <div style={{ margin: '28px 0 20px' }}>
-            <FloralDivider />
+          {/* Divider Sulapa Eppa */}
+          <div style={{ display: 'flex', justifyContent: 'center', margin: '24px 0 20px' }}>
+            <GoldDivider />
           </div>
 
-          <p style={{ fontSize: 'clamp(10px, 2vw, 12px)', letterSpacing: '4px', color: 'var(--secondary)', marginBottom: '4px', fontWeight: 500 }}>
+          {/* Tanggal */}
+          <p style={{
+            fontSize: 'clamp(10px,2vw,12px)', letterSpacing: '0.4em',
+            color: 'rgba(201,168,76,0.8)', marginBottom: '4px', fontWeight: 600,
+            fontFamily: 'Poppins, sans-serif', textTransform: 'uppercase',
+          }}>
             {new Date(WEDDING.tanggal + 'T00:00:00').toLocaleDateString('id-ID', {
               day: '2-digit', month: 'long', year: 'numeric',
             })}
           </p>
-          <p style={{ color: 'var(--on-surface-variant)', fontSize: '12px', marginBottom: '36px', letterSpacing: '2px' }}>
+          <p style={{ ...T2, fontSize: '11px', marginBottom: '36px', letterSpacing: '0.2em', fontFamily: 'Poppins, sans-serif' }}>
             Makassar, Sulawesi Selatan
           </p>
 
-          {/* ── Tombol Buka Undangan → trigger musik + unlock scroll ── */}
+          {/* Tombol */}
           <button className="btn-filled" onClick={handleBukaUndangan}>
             Buka Undangan
           </button>
         </div>
       </section>
 
-      {/* ════════════════ INFO ACARA ══════════════════════════════ */}
+      {/* ══════════════ INFO ACARA ════════════════════════════════ */}
       <section id="info">
-        <FlowerCorner style={{ top: 0, right: 0, width: 120, height: 120 }} />
-        <FlowerCorner style={{ bottom: 0, left: 0, width:  90, height:  90 }} />
+        <SulapaEppa style={{ width: 400, height: 400, top: -80, right: -80, opacity: 1 }} />
+        <BugisCorner style={{ top: 20, left: 20, width: 70, height: 70 }} />
+        <BugisCorner style={{ top: 20, right: 20, width: 70, height: 70, transform: 'scaleX(-1)' }} />
 
         <p className="subtitle">Detail Acara</p>
         <h2>Hari Bahagia Kami</h2>
-        <FloralDivider />
+        <div style={{ display: 'flex', justifyContent: 'center', margin: '16px 0' }}>
+          <SectionDivider />
+        </div>
 
-        <div className="card-soft" style={{ maxWidth: '480px', width: '100%', textAlign: 'center', marginBottom: '24px', marginTop: '8px' }}>
-          <p style={{ fontSize: '13px', color: 'var(--on-surface-variant)', lineHeight: 1.9 }}>
-            Dengan memohon rahmat dan ridho Allah SWT, kami mengundang Bapak/Ibu/Saudara/i
-            untuk hadir dalam pernikahan putra-putri kami:
+        {/* Kalimat undangan */}
+        <div className="card-soft" style={{ maxWidth: '500px', width: '100%', textAlign: 'center', marginBottom: '28px' }}>
+          <p style={{ ...T2, fontSize: '13px', lineHeight: 1.9, fontFamily: 'Poppins, sans-serif' }}>
+            Dengan memohon rahmat dan ridho Allah SWT, kami mengundang Bapak/Ibu/Saudara/i untuk
+            hadir dalam pernikahan putra-putri kami:
           </p>
         </div>
 
-        <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-          <p style={{ fontFamily: 'serif', fontSize: '14px', fontStyle: 'italic', color: 'var(--on-surface-variant)', marginBottom: '2px' }}>
-            {WEDDING.ayah1} &amp; {WEDDING.ibu1}
-          </p>
-          <span style={{ fontSize: '9px', letterSpacing: '3px', color: 'var(--secondary)', display: 'block', marginBottom: '4px', fontWeight: 700 }}>PUTRA KE-1</span>
-          <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(22px, 5vw, 30px)', fontStyle: 'italic', color: 'var(--primary)' }}>
-            {WEDDING.mempelai1}
-          </p>
-
-          <p style={{ fontSize: '22px', letterSpacing: '8px', color: 'var(--secondary)', opacity: 0.5, margin: '10px 0' }}>✿ ✦ ✿</p>
-
-          <p style={{ fontFamily: 'serif', fontSize: '14px', fontStyle: 'italic', color: 'var(--on-surface-variant)', marginBottom: '2px' }}>
-            {WEDDING.ayah2} &amp; {WEDDING.ibu2}
-          </p>
-          <span style={{ fontSize: '9px', letterSpacing: '3px', color: 'var(--secondary)', display: 'block', marginBottom: '4px', fontWeight: 700 }}>PUTRI KE-1</span>
-          <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(22px, 5vw, 30px)', fontStyle: 'italic', color: 'var(--primary)' }}>
-            {WEDDING.mempelai2}
-          </p>
-        </div>
+        {/* Nama lengkap + orang tua — BrideGroomSection */}
+        <BrideGroomSection mempelai={MEMPELAI} />
 
         <CountDown />
 
         {/* Jadwal */}
-        <div className="grid-2" style={{ marginTop: '24px', width: '100%', maxWidth: '560px' }}>
+        <div className="grid-2" style={{ marginTop: '28px', width: '100%', maxWidth: '560px' }}>
           {[
-            { icon: '🕌', label: 'AKAD NIKAH', ...WEDDING.akad  },
-            { icon: '🎊', label: 'RESEPSI',    ...WEDDING.resepsi },
+            { icon: '🕌', label: 'Akad Nikah', ...WEDDING.akad  },
+            { icon: '🎊', label: 'Resepsi',    ...WEDDING.resepsi },
           ].map((s) => (
-            <div key={s.label} className="card" style={{ textAlign: 'center', borderRadius: '12px' }}>
+            <div key={s.label} className="card" style={{ textAlign: 'center', borderRadius: '14px' }}>
               <div style={{ fontSize: '28px', marginBottom: '10px' }}>{s.icon}</div>
-              <p style={{ fontSize: '9px', letterSpacing: '2px', color: 'var(--secondary)', marginBottom: '8px', fontWeight: 700 }}>
+              <p style={{ ...TG, fontSize: '9px', letterSpacing: '0.25em', marginBottom: '8px', fontWeight: 700, fontFamily: 'Poppins, sans-serif', textTransform: 'uppercase' }}>
                 {s.label}
               </p>
-              <p style={{ fontFamily: 'serif', fontSize: 'clamp(16px, 3vw, 20px)', color: 'var(--primary)', marginBottom: '4px' }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(16px,3vw,20px)', ...T, marginBottom: '4px' }}>
                 {s.tanggal}
               </p>
-              <p style={{ color: 'var(--on-surface-variant)', fontSize: '13px' }}>{s.waktu}</p>
+              <p style={{ ...T2, fontSize: '13px', fontFamily: 'Poppins, sans-serif' }}>{s.waktu}</p>
             </div>
           ))}
         </div>
 
         {/* Lokasi */}
-        <div className="card" style={{ maxWidth: '520px', width: '100%', marginTop: '14px', textAlign: 'center', borderRadius: '12px' }}>
-          <div style={{ fontSize: '26px', marginBottom: '10px' }}>📍</div>
-          <p style={{ fontSize: '9px', letterSpacing: '2px', color: 'var(--secondary)', marginBottom: '8px', fontWeight: 700 }}>LOKASI</p>
-          <p style={{ fontFamily: 'serif', fontSize: 'clamp(18px, 4vw, 22px)', color: 'var(--primary)', marginBottom: '6px' }}>
+        <div className="card" style={{ maxWidth: '520px', width: '100%', marginTop: '14px', textAlign: 'center', borderRadius: '14px' }}>
+          <div style={{ fontSize: '24px', marginBottom: '10px' }}>📍</div>
+          <p style={{ ...TG, fontSize: '9px', letterSpacing: '0.25em', marginBottom: '8px', fontWeight: 700, fontFamily: 'Poppins, sans-serif', textTransform: 'uppercase' }}>
+            Lokasi
+          </p>
+          <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(18px,4vw,22px)', ...T, marginBottom: '6px' }}>
             {WEDDING.venue}
           </p>
-          <p style={{ color: 'var(--on-surface-variant)', fontSize: '13px', marginBottom: '16px' }}>
+          <p style={{ ...T2, fontSize: '13px', marginBottom: '16px', fontFamily: 'Poppins, sans-serif' }}>
             {WEDDING.alamat}
           </p>
-          <a
-            href={WEDDING.mapsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-outline"
-            style={{ display: 'inline-block', textDecoration: 'none' }}
-          >
+          <a href={WEDDING.mapsUrl} target="_blank" rel="noopener noreferrer"
+            className="btn-outline" style={{ display: 'inline-block', textDecoration: 'none' }}>
             🗺️ Buka Google Maps
           </a>
         </div>
       </section>
 
-      {/* ════════════════ KISAH CINTA ═════════════════════════════ */}
+      {/* ══════════════ KISAH CINTA ═══════════════════════════════ */}
       <section id="story">
-        <FlowerCorner style={{ top: 0, right: 0, width: 100, height: 100 }} />
+        <SulapaEppa style={{ width: 350, height: 350, bottom: -60, left: -60, opacity: 1 }} />
 
         <p className="subtitle">Perjalanan Cinta</p>
         <h2>Kisah Kami</h2>
-        <FloralDivider />
+        <div style={{ display: 'flex', justifyContent: 'center', margin: '16px 0' }}>
+          <SectionDivider />
+        </div>
 
+        {/* Story card */}
         <div style={{
-          position:   'relative',
-          maxWidth:   '520px',
-          width:      '100%',
-          background: 'var(--surface)',
-          border:     '1px solid rgba(209,195,202,0.4)',
+          position: 'relative', maxWidth: '520px', width: '100%',
+          background: 'rgba(255,255,255,0.04)',
+          border: '1px solid rgba(201,168,76,0.2)',
           borderRadius: '16px',
-          padding:    'clamp(20px, 5vw, 36px)',
-          overflow:   'hidden',
+          padding: 'clamp(20px,5vw,36px)',
+          backdropFilter: 'blur(12px)',
+          overflow: 'hidden',
         }}>
+          {/* Corner accent dalam card */}
           <div style={{
             position: 'absolute', top: -40, right: -40,
-            width: 140, height: 140, borderRadius: '50%',
-            background: 'rgba(196,181,253,0.1)',
-            border: '1px solid rgba(196,181,253,0.2)',
+            width: 130, height: 130, borderRadius: '50%',
+            background: 'rgba(120,80,200,0.07)',
+            border: '1px solid rgba(160,126,224,0.15)',
             pointerEvents: 'none',
           }} />
 
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', marginBottom: '14px' }}>
+            {/* Icon tahun */}
             <div style={{
               width: 54, height: 54, borderRadius: '50%',
-              background: 'linear-gradient(135deg, var(--surface-container-low), var(--surface-container))',
+              background: 'linear-gradient(135deg, rgba(201,168,76,0.15), rgba(120,80,200,0.1))',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '28px', flexShrink: 0,
-              border: '1px solid var(--outline-variant)',
+              fontSize: '26px', flexShrink: 0,
+              border: '1px solid rgba(201,168,76,0.25)',
+              boxShadow: '0 0 12px rgba(201,168,76,0.1)',
             }}>
               {LOVE_STORY[storyIndex].icon}
             </div>
             <div>
-              <p style={{ fontSize: '9px', letterSpacing: '3px', color: 'var(--secondary)', fontWeight: 700 }}>
+              <p style={{ ...TG, fontSize: '9px', letterSpacing: '0.3em', fontWeight: 700, fontFamily: 'Poppins, sans-serif', textTransform: 'uppercase', marginBottom: '4px' }}>
                 {LOVE_STORY[storyIndex].tahun}
               </p>
-              <p style={{ fontFamily: 'serif', fontSize: 'clamp(18px, 4vw, 24px)', color: 'var(--primary)', fontStyle: 'italic' }}>
+              <p style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: 'clamp(18px, 4vw, 24px)',
+                color: 'var(--champagne)', fontStyle: 'italic',
+              }}>
                 {LOVE_STORY[storyIndex].judul}
               </p>
             </div>
           </div>
 
-          <p style={{ color: 'var(--on-surface-variant)', lineHeight: 1.85, fontSize: '14px' }}>
+          <p style={{ ...T2, lineHeight: 1.9, fontSize: '14px', fontFamily: 'Poppins, sans-serif' }}>
             {LOVE_STORY[storyIndex].cerita}
           </p>
         </div>
 
         {/* Dots */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', margin: '16px 0 14px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', margin: '18px 0 14px' }}>
           {LOVE_STORY.map((_, i) => (
-            <span
-              key={i}
-              className={`story-dot ${i === storyIndex ? 'active' : ''}`}
-              onClick={() => setStoryIndex(i)}
-            />
+            <span key={i} className={`story-dot ${i === storyIndex ? 'active' : ''}`} onClick={() => setStoryIndex(i)} />
           ))}
         </div>
 
@@ -407,37 +465,44 @@ function App() {
         </div>
       </section>
 
-      {/* ════════════════ GALLERY ════════════════════════════════ */}
+      {/* ══════════════ GALLERY ═══════════════════════════════════ */}
       <section id="gallery">
-        <FlowerCorner style={{ top: 0, left: 0, width: 110, height: 110 }} />
+        <SulapaEppa style={{ width: 300, height: 300, top: -40, right: -40, opacity: 1 }} />
+        <BugisCorner style={{ top: 20, left: 20, width: 65, height: 65 }} />
 
         <p className="subtitle">Galeri Foto</p>
         <h2>Momen Berharga</h2>
-        <FloralDivider />
+        <div style={{ display: 'flex', justifyContent: 'center', margin: '16px 0 24px' }}>
+          <SectionDivider />
+        </div>
         <Gallery />
       </section>
 
-      {/* ════════════════ RSVP ═══════════════════════════════════ */}
+      {/* ══════════════ RSVP ══════════════════════════════════════ */}
       <section id="rsvp">
         <p className="subtitle">Konfirmasi Kehadiran</p>
         <h2>RSVP</h2>
-        <FloralDivider />
-        <p style={{ color: 'var(--on-surface-variant)', maxWidth: '420px', textAlign: 'center', fontSize: '14px', lineHeight: 1.85, marginBottom: '28px', marginTop: '8px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', margin: '16px 0' }}>
+          <SectionDivider />
+        </div>
+        <p style={{ ...T2, maxWidth: '420px', textAlign: 'center', fontSize: '13px', lineHeight: 1.85, marginBottom: '28px', fontFamily: 'Poppins, sans-serif' }}>
           Kehadiranmu adalah kebahagiaan terbesar kami. 🌸<br />
           Mohon konfirmasi paling lambat{' '}
-          <strong style={{ color: 'var(--primary)' }}>{WEDDING.batasRsvp}</strong>.
+          <strong style={TG}>{WEDDING.batasRsvp}</strong>.
         </p>
         <RSVPForm />
       </section>
 
-      {/* ════════════════ AMPLOP DIGITAL ═════════════════════════ */}
+      {/* ══════════════ AMPLOP DIGITAL ════════════════════════════ */}
       <section id="amplop">
-        <FlowerCorner style={{ bottom: 20, right: 20, width: 100, height: 100 }} />
+        <SulapaEppa style={{ width: 350, height: 350, bottom: -60, right: -60, opacity: 1 }} />
 
         <p className="subtitle">Amplop Digital</p>
         <h2>Hadiah &amp; Doa</h2>
-        <FloralDivider />
-        <p style={{ color: 'var(--on-surface-variant)', maxWidth: '440px', textAlign: 'center', fontSize: '14px', lineHeight: 1.85, marginBottom: '28px', marginTop: '8px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', margin: '16px 0' }}>
+          <SectionDivider />
+        </div>
+        <p style={{ ...T2, maxWidth: '440px', textAlign: 'center', fontSize: '13px', lineHeight: 1.85, marginBottom: '28px', fontFamily: 'Poppins, sans-serif' }}>
           Jika kamu berniat memberikan hadiah, kami sangat berterima kasih.<br />
           Doamu pun sudah lebih dari cukup. 🙏
         </p>
@@ -446,28 +511,29 @@ function App() {
           {BANKS.map((b) => (
             <div key={b.bank} className="bank-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <span style={{ fontSize: '10px', letterSpacing: '3px', color: 'var(--secondary)', fontWeight: 700 }}>
+                <span style={{ ...TG, fontSize: '11px', letterSpacing: '0.25em', fontWeight: 700, fontFamily: 'Poppins, sans-serif', textTransform: 'uppercase' }}>
                   {b.bank}
                 </span>
                 <span style={{
-                  fontSize: '9px', color: '#fff',
-                  background: 'var(--secondary)',
-                  padding: '3px 10px', borderRadius: '20px', letterSpacing: '1px',
+                  fontSize: '9px', color: '#0d0f1a',
+                  background: 'linear-gradient(135deg, #c9a84c, #e8c87a)',
+                  padding: '3px 12px', borderRadius: '20px', letterSpacing: '0.12em', fontWeight: 600,
+                  fontFamily: 'Poppins, sans-serif',
                 }}>
                   Transfer
                 </span>
               </div>
-              <p style={{ fontFamily: 'serif', fontSize: 'clamp(20px, 5vw, 28px)', letterSpacing: '3px', color: 'var(--primary)', marginBottom: '4px' }}>
+              <p style={{
+                fontFamily: "'Cinzel', serif", fontSize: 'clamp(18px, 5vw, 26px)',
+                letterSpacing: '0.12em', color: 'var(--champagne)', marginBottom: '4px',
+                textShadow: '0 0 12px rgba(201,168,76,0.2)',
+              }}>
                 {b.norek}
               </p>
-              <p style={{ fontSize: '13px', color: 'var(--on-surface-variant)', marginBottom: '16px' }}>
+              <p style={{ ...T2, fontSize: '12px', marginBottom: '16px', fontFamily: 'Poppins, sans-serif' }}>
                 a.n. {b.atas}
               </p>
-              <button
-                className="btn-outline"
-                style={{ fontSize: '11px' }}
-                onClick={() => copyNorek(b.norek)}
-              >
+              <button className="btn-outline" style={{ fontSize: '11px' }} onClick={() => copyNorek(b.norek)}>
                 {copiedBank === b.norek ? '✓ Tersalin!' : '📋 Salin Nomor'}
               </button>
             </div>
@@ -475,61 +541,87 @@ function App() {
         </div>
       </section>
 
-      {/* ════════════════ UCAPAN ═════════════════════════════════ */}
+      {/* ══════════════ UCAPAN ════════════════════════════════════ */}
       <section id="pesan">
         <p className="subtitle">Buku Tamu</p>
         <h2>Ucapan &amp; Doa</h2>
-        <FloralDivider />
-        <p style={{ color: 'var(--on-surface-variant)', maxWidth: '440px', textAlign: 'center', fontSize: '14px', lineHeight: 1.85, marginBottom: '28px', marginTop: '8px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', margin: '16px 0' }}>
+          <SectionDivider />
+        </div>
+        <p style={{ ...T2, maxWidth: '440px', textAlign: 'center', fontSize: '13px', lineHeight: 1.85, marginBottom: '28px', fontFamily: 'Poppins, sans-serif' }}>
           Tinggalkan ucapan dan doa terbaikmu untuk kami. 💌<br />
           Setiap kata-katamu akan kami simpan sebagai kenangan indah.
         </p>
         <GuestBook />
       </section>
 
-      {/* ════════════════ FOOTER ════════════════════════════════ */}
+      {/* ══════════════ FOOTER ════════════════════════════════════ */}
       <footer className="footer-section">
-        <p style={{ fontSize: '26px', letterSpacing: '10px', color: 'rgba(255,255,255,0.35)', marginBottom: '24px' }}>
-          ✿ ✦ ✿
-        </p>
+        {/* Sulapa Eppa footer */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '28px', opacity: 0.4 }}>
+          <svg viewBox="0 0 60 60" width="40" height="40" fill="none">
+            <polygon points="30,6 54,30 30,54 6,30" stroke="rgba(201,168,76,0.8)" strokeWidth="1" fill="none"/>
+            <polygon points="30,14 46,30 30,46 14,30" stroke="rgba(201,168,76,0.5)" strokeWidth="0.7" fill="none"/>
+            <circle cx="30" cy="30" r="3" fill="rgba(201,168,76,0.6)"/>
+          </svg>
+        </div>
+
         <p style={{
-          fontFamily: 'serif',
-          fontSize:   'clamp(14px, 3vw, 18px)',
-          fontStyle:  'italic',
-          color:      'rgba(255,255,255,0.88)',
-          lineHeight: 2,
-          maxWidth:   '520px',
-          margin:     '0 auto 14px',
-          textAlign:  'center',
-          padding:    '0 16px',
+          fontFamily: "'Cormorant Garamond', serif",
+          fontSize: 'clamp(14px, 3vw, 17px)',
+          fontStyle: 'italic',
+          color: 'rgba(245,230,200,0.75)',
+          lineHeight: 2, maxWidth: '520px',
+          margin: '0 auto 14px', textAlign: 'center', padding: '0 16px',
         }}>
           "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu
           istri-istri dari jenismu sendiri, supaya kamu cenderung dan merasa
           tenteram kepadanya..."
         </p>
-        <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', letterSpacing: '2px', marginBottom: '28px', textAlign: 'center' }}>
-          QS. Ar-Rum: 21
+        <p style={{ fontSize: '10px', color: 'rgba(201,168,76,0.45)', letterSpacing: '0.2em', marginBottom: '28px', textAlign: 'center', fontFamily: 'Poppins, sans-serif' }}>
+          QS. AR-RUM : 21
         </p>
 
-        <div style={{ width: '60px', height: '1px', background: 'rgba(255,255,255,0.2)', margin: '0 auto 20px' }} />
+        <div style={{ width: '60px', height: '1px', background: 'rgba(201,168,76,0.2)', margin: '0 auto 20px' }} />
 
         <p style={{
-          fontFamily: 'serif',
-          fontSize:   'clamp(18px, 4vw, 22px)',
-          fontStyle:  'italic',
-          color:      'rgba(255,255,255,0.8)',
-          letterSpacing: '2px',
-          textAlign:  'center',
+          fontFamily: "'Cinzel', serif",
+          fontSize: 'clamp(18px, 4vw, 22px)',
+          letterSpacing: '0.12em',
+          color: 'var(--champagne)',
+          textAlign: 'center',
+          textShadow: '0 0 20px rgba(201,168,76,0.25)',
         }}>
           {WEDDING.mempelai1} &amp; {WEDDING.mempelai2}
         </p>
-        <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', letterSpacing: '3px', marginTop: '6px', textAlign: 'center' }}>
+        <p style={{ fontSize: '10px', color: 'rgba(201,168,76,0.4)', letterSpacing: '0.3em', marginTop: '6px', textAlign: 'center', fontFamily: 'Poppins, sans-serif', textTransform: 'uppercase' }}>
           {WEDDING.tanggal.split('-').reverse().join('.')}
         </p>
       </footer>
 
-      {/* triggerPlay dikirim ke MusicPlayer */}
       <MusicPlayer triggerPlay={playMusic} />
+
+      {/* ══════════════ TOMBOL STOP AUTO SCROLL ══════════════════ */}
+      {autoScrolling && (
+        <button
+          onClick={handleStopAutoScroll}
+          style={{
+            position: 'fixed', bottom: '80px', right: '20px', zIndex: 999,
+            background: 'rgba(13,15,26,0.85)',
+            border: '1px solid rgba(201,168,76,0.4)',
+            color: 'var(--gold)', borderRadius: '50px',
+            padding: '9px 18px', fontSize: '11px',
+            letterSpacing: '0.15em', cursor: 'pointer',
+            backdropFilter: 'blur(10px)',
+            fontFamily: 'Poppins, sans-serif',
+            fontWeight: 600,
+            boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+            transition: 'opacity 0.3s',
+          }}
+        >
+          ⏸ Stop Scroll
+        </button>
+      )}
 
       {toast && <div className="toast show">{toast}</div>}
     </>

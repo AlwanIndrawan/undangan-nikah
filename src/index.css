@@ -1,8 +1,8 @@
 /* ============================================================
-   IMPORT FONTS
+   IMPORT FONTS — Modern Cinematic Bugis
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Manrope:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Playfair+Display:ital,wght@0,400;1,400;1,700&family=Poppins:wght@300;400;500;600&display=swap');
 
 /* ============================================================
    RESET
@@ -17,39 +17,62 @@
 html { scroll-behavior: smooth; }
 
 /* ============================================================
-   DESIGN TOKENS
+   DESIGN TOKENS — Modern Luxury + Bugis Heritage
    ============================================================ */
 
 :root {
-  --primary:               #44213d;
-  --on-primary:            #ffffff;
-  --primary-container:     #5d3754;
-  --on-primary-container:  #d3a2c4;
+  /* ── Core Palette ── */
+  --midnight-navy:       #0d0f1a;
+  --deep-navy:           #111428;
+  --dark-purple:         #1a0e2e;
+  --mid-purple:          #2d1f4a;
+  --surface-dark:        #16122a;
+  --surface-card:        rgba(255,255,255,0.04);
+  --surface-card-hover:  rgba(255,255,255,0.07);
 
-  --secondary:             #6d5389;
-  --on-secondary:          #ffffff;
-  --secondary-container:   #dfc0fd;
-  --on-secondary-container:#644b80;
+  /* ── Accent Gold ── */
+  --gold:                #c9a84c;
+  --gold-light:          #e8c87a;
+  --gold-dim:            rgba(201,168,76,0.35);
+  --gold-glow:           rgba(201,168,76,0.12);
+  --champagne:           #f5e6c8;
+  --ivory:               #fdf8f0;
 
-  --background:            #fbf9fa;
-  --surface:               #fbf9fa;
-  --surface-container-low: #f5f3f4;
-  --surface-container:     #efedee;
-  --surface-container-high:#e9e8e9;
-  --surface-dim:           #dbd9da;
+  /* ── Purple Glow ── */
+  --purple-glow:         rgba(120,80,200,0.18);
+  --purple-accent:       #7850c8;
+  --purple-soft:         #a07ee0;
+  --purple-dim:          rgba(160,126,224,0.25);
 
-  --on-background:         #1b1c1d;
-  --on-surface:            #1b1c1d;
-  --on-surface-variant:    #4e444a;
+  /* ── Text ── */
+  --text-primary:        #f5e6c8;     /* champagne */
+  --text-secondary:      rgba(245,230,200,0.65);
+  --text-muted:          rgba(245,230,200,0.38);
+  --text-gold:           #c9a84c;
 
-  --outline:               #80747a;
-  --outline-variant:       #d1c3ca;
+  /* ── Semantic aliases (agar komponen lama tidak perlu edit) ── */
+  --primary:             var(--gold);
+  --on-primary:          #0d0f1a;
+  --secondary:           var(--purple-soft);
+  --on-secondary:        #fff;
+  --background:          var(--midnight-navy);
+  --surface:             var(--surface-dark);
+  --surface-container-low:  rgba(255,255,255,0.03);
+  --surface-container:      rgba(255,255,255,0.06);
+  --surface-container-high: rgba(255,255,255,0.09);
+  --on-background:       var(--text-primary);
+  --on-surface:          var(--text-primary);
+  --on-surface-variant:  var(--text-secondary);
+  --outline:             rgba(201,168,76,0.25);
+  --outline-variant:     rgba(201,168,76,0.15);
 
-  --font-display:    'Cormorant Garamond', serif;
-  --font-body:       'Manrope', sans-serif;
+  /* ── Typography ── */
+  --font-display:  'Cinzel', 'Cormorant Garamond', serif;
+  --font-serif:    'Cormorant Garamond', 'Playfair Display', serif;
+  --font-body:     'Poppins', sans-serif;
 
-  --edge:            1.5rem;
-  --container-max:   1100px;
+  --edge:          1.5rem;
+  --container-max: 1100px;
 }
 
 /* ============================================================
@@ -58,11 +81,25 @@ html { scroll-behavior: smooth; }
 
 body {
   font-family: var(--font-body);
-  background: var(--background);
-  color: var(--on-background);
+  background: var(--midnight-navy);
+  color: var(--text-primary);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   line-height: 1.6;
+}
+
+/* ── Gradient background utama ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 10%,  rgba(120,80,200,0.14) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 90%,  rgba(201,168,76,0.08) 0%, transparent 55%),
+    radial-gradient(ellipse 90% 80% at 50% 50%,  rgba(26,14,46,0.9)    0%, transparent 100%),
+    linear-gradient(160deg, #0d0f1a 0%, #111428 40%, #1a0e2e 100%);
+  pointer-events: none;
 }
 
 /* ============================================================
@@ -85,20 +122,42 @@ body {
 }
 
 @keyframes pulse-ring {
-  0%, 100% { transform: translate(-50%, -50%) scale(1);    opacity: 0.4; }
-  50%       { transform: translate(-50%, -50%) scale(1.08); opacity: 0.2; }
+  0%, 100% { transform: translate(-50%, -50%) scale(1);     opacity: 0.3; }
+  50%       { transform: translate(-50%, -50%) scale(1.07);  opacity: 0.12; }
 }
 
 @keyframes petalFall {
   0%   { transform: translateY(-10vh) rotate(0deg);   opacity: 0; }
-  10%  { opacity: 0.4; }
-  90%  { opacity: 0.3; }
+  10%  { opacity: 0.25; }
+  90%  { opacity: 0.15; }
   100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
 }
 
 @keyframes drawerSlide {
   from { opacity: 0; transform: translateY(-8px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes goldShimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@keyframes particleDrift {
+  0%   { transform: translateY(0)   translateX(0)   scale(1);   opacity: 0; }
+  20%  { opacity: 0.6; }
+  80%  { opacity: 0.3; }
+  100% { transform: translateY(-80px) translateX(20px) scale(0.5); opacity: 0; }
+}
+
+@keyframes sulapaRotate {
+  0%   { transform: rotate(0deg)   scale(1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes borderGlow {
+  0%, 100% { box-shadow: 0 0 12px var(--gold-dim), inset 0 0 12px rgba(201,168,76,0.04); }
+  50%       { box-shadow: 0 0 28px rgba(201,168,76,0.25), inset 0 0 20px rgba(201,168,76,0.07); }
 }
 
 .anim-fade-up { animation: fadeUp 0.8s ease both; }
@@ -117,10 +176,11 @@ section {
   justify-content: center;
   padding: 100px var(--edge) 80px;
   position: relative;
+  overflow: hidden;
 }
 
 /* ============================================================
-   NAVIGATION — TOP BAR (Desktop)
+   NAVIGATION — TOP BAR
    ============================================================ */
 
 nav.topbar {
@@ -128,10 +188,10 @@ nav.topbar {
   top: 0; left: 0; right: 0;
   z-index: 100;
   height: 60px;
-  background: rgba(251, 249, 250, 0.94);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(209, 195, 202, 0.35);
+  background: rgba(13, 15, 26, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(201, 168, 76, 0.18);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -140,11 +200,12 @@ nav.topbar {
 
 nav.topbar .brand {
   font-family: var(--font-display);
-  font-size: 18px;
-  letter-spacing: 0.1em;
-  color: var(--primary);
-  font-style: italic;
+  font-size: 15px;
+  letter-spacing: 0.15em;
+  color: var(--gold);
+  font-style: normal;
   flex-shrink: 0;
+  text-transform: uppercase;
 }
 
 nav.topbar .nav-links {
@@ -156,10 +217,10 @@ nav.topbar .nav-links {
 nav.topbar .nav-links a {
   font-family: var(--font-body);
   font-size: 10px;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  font-weight: 700;
-  color: var(--on-surface-variant);
+  font-weight: 500;
+  color: var(--text-secondary);
   text-decoration: none;
   transition: color 0.2s;
   cursor: pointer;
@@ -168,19 +229,19 @@ nav.topbar .nav-links a {
 
 nav.topbar .nav-links a:hover,
 nav.topbar .nav-links a.active {
-  color: var(--primary);
+  color: var(--gold);
 }
 
-/* Hamburger — hanya muncul mobile */
 .menu-toggle {
   display: none;
   background: none;
-  border: none;
-  font-size: 20px;
-  color: var(--primary);
+  border: 1px solid rgba(201,168,76,0.25);
+  font-size: 16px;
+  color: var(--gold);
   cursor: pointer;
-  padding: 6px;
+  padding: 6px 10px;
   line-height: 1;
+  border-radius: 6px;
 }
 
 /* ── Mobile Drawer ── */
@@ -189,23 +250,23 @@ nav.topbar .nav-links a.active {
   top: 60px;
   left: 0; right: 0;
   z-index: 99;
-  background: rgba(251, 249, 250, 0.98);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--outline-variant);
+  background: rgba(13, 15, 26, 0.98);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(201,168,76,0.15);
   display: flex;
   flex-direction: column;
   padding: 8px 0 16px;
   animation: drawerSlide 0.2s ease;
-  box-shadow: 0 4px 20px rgba(68,33,61,0.08);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
 }
 
 .mobile-drawer a {
   font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--on-surface-variant);
+  color: var(--text-secondary);
   padding: 12px 24px;
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
@@ -217,8 +278,8 @@ nav.topbar .nav-links a.active {
 
 .mobile-drawer a:hover,
 .mobile-drawer a.active {
-  background: var(--surface-container-low);
-  color: var(--primary);
+  background: rgba(201,168,76,0.07);
+  color: var(--gold);
 }
 
 /* ============================================================
@@ -228,22 +289,23 @@ nav.topbar .nav-links a.active {
 .subtitle {
   font-family: var(--font-body);
   font-size: 10px;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.4em;
   text-transform: uppercase;
-  font-weight: 700;
-  color: var(--secondary);
+  font-weight: 600;
+  color: var(--gold);
   text-align: center;
   margin-bottom: 10px;
+  opacity: 0.8;
 }
 
 h2 {
   font-family: var(--font-display);
-  font-size: clamp(28px, 6vw, 42px);
+  font-size: clamp(26px, 5vw, 38px);
   font-weight: 400;
-  color: var(--primary);
+  color: var(--champagne);
   text-align: center;
   line-height: 1.2;
-  font-style: italic;
+  letter-spacing: 0.08em;
 }
 
 /* ============================================================
@@ -257,32 +319,41 @@ h2 {
 }
 
 /* ============================================================
-   CARDS
+   CARDS — Cinematic Dark
    ============================================================ */
 
 .card {
-  background: var(--surface);
-  border: 1px solid rgba(209, 195, 202, 0.4);
+  background: var(--surface-card);
+  border: 1px solid rgba(201,168,76,0.18);
   padding: 28px 24px;
   border-radius: 12px;
+  backdrop-filter: blur(8px);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  border-color: rgba(201,168,76,0.35);
+  box-shadow: 0 0 24px rgba(201,168,76,0.08);
 }
 
 .card-secondary {
-  background: var(--secondary-container);
-  border: 1px solid rgba(209, 195, 202, 0.3);
+  background: rgba(120,80,200,0.08);
+  border: 1px solid rgba(160,126,224,0.2);
   padding: 28px;
   border-radius: 12px;
+  backdrop-filter: blur(8px);
 }
 
 .card-soft {
-  background: var(--surface-container-low);
-  border: 1px solid rgba(209, 195, 202, 0.3);
+  background: var(--surface-card);
+  border: 1px solid rgba(201,168,76,0.12);
   padding: 24px;
   border-radius: 12px;
+  backdrop-filter: blur(8px);
 }
 
 /* ============================================================
-   BUTTONS
+   BUTTONS — Gold & Purple
    ============================================================ */
 
 .btn-filled {
@@ -290,21 +361,28 @@ h2 {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: var(--primary);
-  color: var(--on-primary);
+  background: linear-gradient(135deg, #c9a84c, #e8c87a, #c9a84c);
+  background-size: 200% auto;
+  color: #0d0f1a;
   border: none;
   border-radius: 999px;
-  padding: 14px 36px;
+  padding: 14px 40px;
   font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.2s;
+  transition: background-position 0.4s ease, transform 0.2s, box-shadow 0.3s;
+  box-shadow: 0 4px 20px rgba(201,168,76,0.3);
 }
 
-.btn-filled:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn-filled:hover {
+  background-position: right center;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(201,168,76,0.45);
+}
+
 .btn-filled:active { transform: translateY(0); }
 
 .btn-outline {
@@ -313,76 +391,56 @@ h2 {
   justify-content: center;
   gap: 8px;
   background: transparent;
-  color: var(--primary);
-  border: 1px solid rgba(68, 33, 61, 0.35);
+  color: var(--gold);
+  border: 1px solid rgba(201,168,76,0.4);
   border-radius: 999px;
   padding: 11px 28px;
   font-family: var(--font-body);
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-weight: 500;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
+  transition: background 0.25s, border-color 0.25s, color 0.25s, transform 0.2s;
 }
 
 .btn-outline:hover {
-  background: rgba(68, 33, 61, 0.05);
-  border-color: var(--primary);
+  background: rgba(201,168,76,0.1);
+  border-color: var(--gold);
+  transform: translateY(-1px);
 }
+
+.btn-outline:active { transform: translateY(0); }
 
 /* ============================================================
    FORM ELEMENTS
    ============================================================ */
 
-input, textarea, select {
+input, select, textarea {
   width: 100%;
-  background: var(--surface-container-low);
-  border: 1px solid rgba(209, 195, 202, 0.5);
-  border-radius: 10px;
-  padding: 12px 16px;
   font-family: var(--font-body);
-  font-size: 14px;
-  color: var(--on-surface);
+  font-size: 13px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: var(--text-primary);
+  transition: border-color 0.2s, background 0.2s;
   outline: none;
-  transition: border-color 0.25s;
-  appearance: none;
 }
 
-input::placeholder,
-textarea::placeholder {
-  color: rgba(128, 116, 122, 0.55);
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted);
 }
 
-input:focus,
-textarea:focus,
-select:focus {
-  border-color: var(--primary);
-  background: var(--surface);
+input:focus, select:focus, textarea:focus {
+  border-color: rgba(201,168,76,0.5);
+  background: rgba(255,255,255,0.07);
 }
 
-/* ============================================================
-   DIVIDERS
-   ============================================================ */
-
-.botanical-divider {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  padding: 20px 0;
-  opacity: 0.3;
-}
-
-.botanical-divider .line {
-  width: 80px;
-  height: 1px;
-  background: var(--primary);
-}
-
-.botanical-divider .icon {
-  font-size: 20px;
-  color: var(--primary);
+select option {
+  background: #1a0e2e;
+  color: var(--text-primary);
 }
 
 /* ============================================================
@@ -395,33 +453,34 @@ select:focus {
   max-width: 520px;
   width: 100%;
   margin: 16px auto 0;
-  border-left: 1px solid rgba(209, 195, 202, 0.3);
+  border-left: 1px solid rgba(201,168,76,0.2);
 }
 
 .countdown-box {
   padding: 20px 12px;
   text-align: center;
-  border-right: 1px solid rgba(209, 195, 202, 0.3);
+  border-right: 1px solid rgba(201,168,76,0.2);
 }
 
 .countdown-box .num {
   display: block;
   font-family: var(--font-display);
-  font-size: clamp(28px, 6vw, 44px);
+  font-size: clamp(28px, 6vw, 48px);
   font-weight: 400;
-  color: var(--primary);
+  color: var(--gold);
   line-height: 1;
   margin-bottom: 6px;
+  text-shadow: 0 0 20px rgba(201,168,76,0.4);
 }
 
 .countdown-box .lbl {
   display: block;
   font-family: var(--font-body);
-  font-size: 10px;
-  letter-spacing: 0.12em;
+  font-size: 9px;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  font-weight: 700;
-  color: var(--on-surface-variant);
+  font-weight: 600;
+  color: var(--text-muted);
 }
 
 /* ============================================================
@@ -430,57 +489,33 @@ select:focus {
 
 .story-dot {
   display: inline-block;
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: var(--outline-variant);
+  background: rgba(201,168,76,0.2);
   cursor: pointer;
   transition: all 0.3s;
   margin: 0 4px;
 }
 
 .story-dot.active {
-  background: var(--primary);
-  width: 24px;
+  background: var(--gold);
+  width: 22px;
   border-radius: 4px;
+  box-shadow: 0 0 8px rgba(201,168,76,0.5);
 }
-
-/* ============================================================
-   PHOTO GRID & ITEMS
-   ============================================================ */
-
-.photo-item {
-  background: var(--surface-container-low);
-  border: 1px solid rgba(209, 195, 202, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border-radius: 8px;
-  transition: border-color 0.3s;
-}
-
-.photo-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: grayscale(15%);
-  transition: filter 0.5s;
-}
-
-.photo-item:hover img  { filter: grayscale(0); }
-.photo-item:hover      { border-color: var(--primary); }
 
 /* ============================================================
    BANK CARD
    ============================================================ */
 
 .bank-card {
-  background: var(--background);
-  border: 1px solid rgba(209, 195, 202, 0.35);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(201,168,76,0.2);
   border-radius: 14px;
   padding: 24px;
-  box-shadow: 0 1px 4px rgba(68, 33, 61, 0.04);
+  animation: borderGlow 4s ease infinite;
+  backdrop-filter: blur(8px);
 }
 
 /* ============================================================
@@ -488,11 +523,16 @@ select:focus {
    ============================================================ */
 
 .comment-item {
-  background: var(--surface-container-low);
-  border: 1px solid rgba(217, 186, 247, 0.22);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(201,168,76,0.1);
   border-radius: 8px;
   padding: 18px;
   margin-bottom: 12px;
+  transition: border-color 0.3s;
+}
+
+.comment-item:hover {
+  border-color: rgba(201,168,76,0.2);
 }
 
 .comment-item:last-child { margin-bottom: 0; }
@@ -506,20 +546,21 @@ select:focus {
   bottom: 80px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--primary);
-  color: var(--on-primary);
+  background: linear-gradient(135deg, #c9a84c, #e8c87a);
+  color: #0d0f1a;
   padding: 10px 24px;
   border-radius: 999px;
   font-family: var(--font-body);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   z-index: 300;
   opacity: 0;
   transition: opacity 0.3s;
   pointer-events: none;
   white-space: nowrap;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.05em;
   max-width: 90vw;
+  box-shadow: 0 4px 20px rgba(201,168,76,0.35);
 }
 
 .toast.show { opacity: 1; }
@@ -536,27 +577,31 @@ select:focus {
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: var(--secondary);
-  border: none;
+  background: linear-gradient(135deg, #2d1f4a, #1a0e2e);
+  border: 1px solid rgba(201,168,76,0.35);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 18px rgba(109, 83, 137, 0.35);
-  font-size: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 12px rgba(201,168,76,0.15);
+  font-size: 18px;
   animation: floatY 2.5s ease infinite;
-  transition: transform 0.2s;
-  color: #fff;
+  transition: transform 0.2s, box-shadow 0.3s;
+  color: var(--gold);
 }
 
-.music-btn:hover { transform: scale(1.1); animation: none; }
+.music-btn:hover {
+  transform: scale(1.1);
+  animation: none;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.5), 0 0 20px rgba(201,168,76,0.3);
+}
 
 /* ============================================================
    COVER SECTION
    ============================================================ */
 
 #cover {
-  background: var(--background);
+  background: transparent;
   min-height: 100vh;
   overflow: hidden;
 }
@@ -564,9 +609,49 @@ select:focus {
 .cover-pulse-ring {
   position: absolute;
   border-radius: 50%;
-  border: 1px solid rgba(109, 83, 137, 0.12);
-  animation: pulse-ring 3s ease infinite;
+  border: 1px solid rgba(201,168,76,0.1);
+  animation: pulse-ring 4s ease infinite;
   pointer-events: none;
+}
+
+/* ============================================================
+   SECTION BACKGROUNDS — Cinematic Dark
+   ============================================================ */
+
+#info {
+  background: linear-gradient(180deg,
+    rgba(26,14,46,0.6) 0%,
+    rgba(13,15,26,0.8) 100%);
+}
+
+#story {
+  background: linear-gradient(180deg,
+    rgba(13,15,26,0.9) 0%,
+    rgba(26,14,46,0.7) 100%);
+}
+
+#gallery {
+  background: linear-gradient(180deg,
+    rgba(26,14,46,0.7) 0%,
+    rgba(13,15,26,0.9) 100%);
+}
+
+#rsvp {
+  background: linear-gradient(180deg,
+    rgba(13,15,26,0.85) 0%,
+    rgba(26,14,46,0.75) 100%);
+}
+
+#amplop {
+  background: linear-gradient(180deg,
+    rgba(26,14,46,0.7) 0%,
+    rgba(13,15,26,0.9) 100%);
+}
+
+#pesan {
+  background: linear-gradient(180deg,
+    rgba(13,15,26,0.85) 0%,
+    rgba(26,14,46,0.6) 100%);
 }
 
 /* ============================================================
@@ -574,7 +659,8 @@ select:focus {
    ============================================================ */
 
 .footer-section {
-  background: var(--primary);
+  background: linear-gradient(180deg, rgba(26,14,46,0.95) 0%, #0d0f1a 100%);
+  border-top: 1px solid rgba(201,168,76,0.15);
   padding: 72px var(--edge);
   text-align: center;
   position: relative;
@@ -582,24 +668,13 @@ select:focus {
 }
 
 /* ============================================================
-   SECTION BACKGROUNDS
-   ============================================================ */
-
-#info    { background: var(--surface); }
-#story   { background: var(--surface-container-low); }
-#gallery { background: var(--surface); }
-#rsvp    { background: var(--surface-container-low); }
-#amplop  { background: var(--surface); }
-#pesan   { background: var(--surface-container-low); }
-
-/* ============================================================
-   LIGHTBOX
+   PHOTO / LIGHTBOX
    ============================================================ */
 
 .lightbox-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(27, 12, 25, 0.94);
+  background: rgba(5, 4, 10, 0.97);
   z-index: 500;
   display: flex;
   align-items: center;
@@ -613,13 +688,14 @@ select:focus {
   max-height: 85vh;
   object-fit: contain;
   border-radius: 4px;
+  border: 1px solid rgba(201,168,76,0.15);
 }
 
 .lightbox-btn {
   position: absolute;
-  background: rgba(68, 33, 61, 0.3);
-  border: 1px solid rgba(255,255,255,0.12);
-  color: #fff;
+  background: rgba(201,168,76,0.1);
+  border: 1px solid rgba(201,168,76,0.2);
+  color: var(--gold);
   padding: 10px 18px;
   cursor: pointer;
   font-size: 18px;
@@ -627,7 +703,7 @@ select:focus {
   border-radius: 6px;
 }
 
-.lightbox-btn:hover { background: rgba(68, 33, 61, 0.6); }
+.lightbox-btn:hover { background: rgba(201,168,76,0.2); }
 
 /* ============================================================
    RESPONSIVE — TABLET  (max 900px)
@@ -636,7 +712,7 @@ select:focus {
 @media (max-width: 900px) {
   nav.topbar .nav-links { display: none; }
   .menu-toggle          { display: block; }
-  nav.topbar .brand     { font-size: 16px; }
+  nav.topbar .brand     { font-size: 13px; }
 }
 
 /* ============================================================
@@ -648,11 +724,10 @@ select:focus {
 
   section {
     padding: 80px var(--edge) 60px;
-    min-height: auto;        /* section tidak paksa full-height di mobile */
+    min-height: auto;
     padding-bottom: 60px;
   }
 
-  /* Cover tetap full height */
   #cover { min-height: 100svh; }
 
   .grid-2 {
@@ -660,34 +735,16 @@ select:focus {
     gap: 12px;
   }
 
-  .countdown-grid {
-    max-width: 320px;
-  }
-
-  .countdown-box { padding: 16px 8px; }
+  .countdown-grid { max-width: 320px; }
+  .countdown-box  { padding: 16px 8px; }
   .countdown-box .num { font-size: clamp(24px, 8vw, 36px); }
 
-  /* Bank card full width */
-  .bank-card { padding: 18px; }
-
-  /* Photo bento simpel di mobile */
-  .photo-item { border-radius: 6px; }
-
-  .music-btn {
-    bottom: 20px;
-    right: 16px;
-    width: 46px;
-    height: 46px;
-  }
-
-  .toast { font-size: 12px; padding: 9px 18px; }
-
-  /* Story card */
-  .story-dot { margin: 0 3px; }
-
-  /* Buttons responsive */
-  .btn-filled  { padding: 13px 28px; font-size: 11px; }
-  .btn-outline { padding: 10px 22px; font-size: 10px; }
+  .bank-card    { padding: 18px; }
+  .music-btn    { bottom: 20px; right: 16px; width: 46px; height: 46px; }
+  .toast        { font-size: 12px; padding: 9px 18px; }
+  .story-dot    { margin: 0 3px; }
+  .btn-filled   { padding: 13px 28px; font-size: 11px; }
+  .btn-outline  { padding: 10px 22px; font-size: 10px; }
 }
 
 /* ============================================================
@@ -696,6 +753,6 @@ select:focus {
 
 @media (max-width: 380px) {
   :root { --edge: 0.875rem; }
-  h2 { font-size: 24px; }
+  h2 { font-size: 22px; }
   .countdown-grid { max-width: 280px; }
 }

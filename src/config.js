@@ -34,6 +34,35 @@ export const WEDDING = {
 };
 
 // ============================================================
+//  DATA MEMPELAI — Foto, Instagram, Gelar
+//  Simpan foto di: public/photos/
+//  Contoh: /photos/mempelai1.jpg dan /photos/mempelai2.jpg
+// ============================================================
+
+export const MEMPELAI = [
+  {
+    nama:      "Andi Anugrah",
+    gelar:     "The Groom",
+    ayah:      "Bpk. Ahmad Fauzi",
+    ibu:       "Ibu Rini Wulandari",
+    urutan:    "Putra Pertama",
+    foto:      "/photos/mempelai1.jpg",   // ganti dengan path foto kamu
+    instagram: "@andi.anugrah",
+    igUrl:     "https://instagram.com/andi.anugrah",
+  },
+  {
+    nama:      "Andi Rahayu",
+    gelar:     "The Bride",
+    ayah:      "Bpk. Drs. Hasan Basri",
+    ibu:       "Ibu Dra. Nurlaela",
+    urutan:    "Putri Pertama",
+    foto:      "/photos/mempelai2.jpg",   // ganti dengan path foto kamu
+    instagram: "@andi.rahayu",
+    igUrl:     "https://instagram.com/andi.rahayu",
+  },
+];
+
+// ============================================================
 //  REKENING BANK (AMPLOP DIGITAL)
 // ============================================================
 
